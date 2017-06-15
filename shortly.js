@@ -2,7 +2,10 @@ var express = require('express');
 var util = require('./lib/utility');
 var partials = require('express-partials');
 var bodyParser = require('body-parser');
-
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/shortly');
 
 var db = require('./app/config');
 var Users = require('./app/collections/users');
@@ -22,25 +25,48 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(session({
+  secret: 'foo',
+  store: new MongoStore({ mongooseConnection: mongoose.connection})
+}));
 
-app.get('/', 
+
+
+app.get('/',
 function(req, res) {
-  res.render('index');
+  //console.log(req.session);
+  if (req.session.user === undefined) {
+    res.redirect('/login');
+  } else {
+    //console.log(req.session);
+    res.render('index');
+  }
+
 });
 
-app.get('/create', 
+app.get('/login',
 function(req, res) {
-  res.render('index');
+  res.render('login');
 });
 
-app.get('/links', 
+app.get('/create',
+function(req, res) {
+  if (req.session.user === undefined) {
+    res.redirect('/login');
+  } else {
+    //console.log(req.session);
+    res.render('index');
+  }
+});
+
+app.get('/links',
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
 });
 
-app.post('/links', 
+app.post('/links',
 function(req, res) {
   var uri = req.body.url;
 
