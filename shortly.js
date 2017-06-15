@@ -39,7 +39,7 @@ function(req, res) {
     res.redirect('/login');
   } else {
     //console.log('trying to look at stuff ' + req.session.user + ' ' + typeof req.session.user);
-    res.render('index');
+    res.render('index', {testKey: req.session.user});
   }
 });
 
