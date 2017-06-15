@@ -35,10 +35,10 @@ app.use(session({
 app.get('/',
 function(req, res) {
   //console.log(req.session);
-  if (req.session.user === undefined) {
+  if (req.session.user === undefined || req.session.user === 'testusernamesetthing') {
     res.redirect('/login');
   } else {
-    console.log('trying to look at stuff ' + req.session.user);
+    //console.log('trying to look at stuff ' + req.session.user + ' ' + typeof req.session.user);
     res.render('index');
   }
 });
@@ -127,7 +127,7 @@ app.post('/login',
   function(req, res) {
     //console.log('login post request: ', req.body.username, req.body.password);
     db.knex('users')
-      .where({'username': req.body.username})
+      .where({'username': req.body.username, 'password': req.body.password})
       .select('*')
       .then(function(result) {
         //console.log('inside then login post', result);
@@ -145,6 +145,10 @@ app.post('/login',
           message: 'Failed to create test setup data'
         };
       });
+  });
+app.get('/signup',
+  function(req, res) {
+    res.render('signup');
   });
 
 app.post('/signup',
