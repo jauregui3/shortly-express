@@ -38,7 +38,7 @@ function(req, res) {
   if (req.session.user === undefined) {
     res.redirect('/login');
   } else {
-    //console.log(req.session);
+    console.log('trying to look at stuff ' + req.session.user);
     res.render('index');
   }
 });
@@ -108,6 +108,21 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.post('/logout',
+  function(req, res) {
+    console.log('logout post');
+  }
+  );
+
+app.get('/logout',
+  function(req, res) {
+    //console.log('logout get\n');
+    req.session.destroy(function() {
+      res.redirect('/login');
+    });
+  }
+);
+
 app.post('/login',
   function(req, res) {
     //console.log('login post request: ', req.body.username, req.body.password);
