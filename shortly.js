@@ -41,8 +41,10 @@ function(req, res) {
     //console.log(req.session);
     res.render('index');
   }
-
 });
+
+
+
 
 app.get('/login',
 function(req, res) {
@@ -61,9 +63,14 @@ function(req, res) {
 
 app.get('/links',
 function(req, res) {
-  Links.reset().fetch().then(function(links) {
-    res.status(200).send(links.models);
-  });
+  if (req.session.user === undefined) {
+    res.redirect('/login');
+  } else {
+    Links.reset().fetch().then(function(links) {
+      res.status(200).send(links.models);
+    });
+  }
+
 });
 
 app.post('/links',
@@ -101,7 +108,28 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.post('/login',
+  function(req, res) {
+    console.log('login post request: ', req.body.username, req.body.password);
+    db.knex('users')
+      //.where({'username': req.body.username})
+      .select('*')
+      .then(function(result) {
+        console.log('inside then login post', result);
+        if (result.length > 0) {
+          req.session.regenerate(function() {
+            req.session.user = result[0].username;
+            res.redirect('/');
+          });
 
+        }
+      }).catch(function(err) {
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
+      });
+  });
 
 
 /************************************************************/
