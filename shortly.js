@@ -110,18 +110,53 @@ function(req, res) {
 /************************************************************/
 app.post('/login',
   function(req, res) {
-    console.log('login post request: ', req.body.username, req.body.password);
+    //console.log('login post request: ', req.body.username, req.body.password);
     db.knex('users')
-      //.where({'username': req.body.username})
+      .where({'username': req.body.username})
       .select('*')
       .then(function(result) {
-        console.log('inside then login post', result);
+        //console.log('inside then login post', result);
         if (result.length > 0) {
           req.session.regenerate(function() {
             req.session.user = result[0].username;
             res.redirect('/');
           });
+        } else {
+          res.redirect('/login');
+        }
+      }).catch(function(err) {
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
+      });
+  });
 
+app.post('/signup',
+  function(req, res) {
+    console.log('signup post request: ', req.body.username, req.body.password);
+    db.knex('users')
+      .where({'username': req.body.username})
+      .select('*')
+      .then(function(result) {
+        //console.log('inside then login post', result);
+        if (result.length > 0) {
+          res.redirect('/login');
+        } else {
+          new User({
+            'username': req.body.username,
+            'password': req.body.password
+          }).save().then(function() {
+            req.session.regenerate(function() {
+              req.session.user = req.body.username;
+              res.redirect('/');
+            });
+          }).catch(function(err) {
+            throw {
+              type: 'DatabaseError',
+              message: 'Failed to create test setup data'
+            };
+          });
         }
       }).catch(function(err) {
         throw {
