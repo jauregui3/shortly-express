@@ -63,6 +63,7 @@ function(req, res) {
 
 app.get('/links',
 function(req, res) {
+  console.log(JSON.stringify(req.session));
   if (req.session.user === undefined) {
     res.redirect('/login');
   } else {
@@ -125,12 +126,10 @@ app.get('/logout',
 
 app.post('/login',
   function(req, res) {
-    //console.log('login post request: ', req.body.username, req.body.password);
     db.knex('users')
       .where({'username': req.body.username, 'password': req.body.password})
       .select('*')
       .then(function(result) {
-        //console.log('inside then login post', result);
         if (result.length > 0) {
           req.session.regenerate(function() {
             req.session.user = result[0].username;
@@ -158,7 +157,6 @@ app.post('/signup',
       .where({'username': req.body.username})
       .select('*')
       .then(function(result) {
-        //console.log('inside then login post', result);
         if (result.length > 0) {
           res.redirect('/login');
         } else {
