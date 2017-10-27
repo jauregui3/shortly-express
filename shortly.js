@@ -24,12 +24,10 @@ app.use(bodyParser.json());
 // Parse forms (signup/login)
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
-
 app.use(session({
   secret: 'foo',
   store: new MongoStore({ mongooseConnection: mongoose.connection})
 }));
-
 
 
 app.get('/',
@@ -40,9 +38,6 @@ function(req, res) {
     res.render('index', {testKey: req.session.user});
   }
 });
-
-
-
 
 app.get('/login',
 function(req, res) {
@@ -60,7 +55,6 @@ function(req, res) {
 
 app.get('/links',
 function(req, res) {
-  console.log(JSON.stringify(req.session));
   if (req.session.user === undefined) {
     res.redirect('/login');
   } else {
@@ -68,13 +62,11 @@ function(req, res) {
       res.status(200).send(links.models);
     });
   }
-
 });
 
 app.post('/links',
 function(req, res) {
   var uri = req.body.url;
-
   if (!util.isValidUrl(uri)) {
     console.log('Not a valid url: ', uri);
     return res.sendStatus(404);
