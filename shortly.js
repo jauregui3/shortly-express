@@ -34,11 +34,9 @@ app.use(session({
 
 app.get('/',
 function(req, res) {
-  //console.log(req.session);
   if (req.session.user === undefined || req.session.user === 'testusernamesetthing') {
     res.redirect('/login');
   } else {
-    //console.log('trying to look at stuff ' + req.session.user + ' ' + typeof req.session.user);
     res.render('index', {testKey: req.session.user});
   }
 });
@@ -56,7 +54,6 @@ function(req, res) {
   if (req.session.user === undefined) {
     res.redirect('/login');
   } else {
-    //console.log(req.session);
     res.render('index');
   }
 });
@@ -117,7 +114,6 @@ app.post('/logout',
 
 app.get('/logout',
   function(req, res) {
-    //console.log('logout get\n');
     req.session.destroy(function() {
       res.redirect('/login');
     });

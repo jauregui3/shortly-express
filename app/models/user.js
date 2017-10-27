@@ -16,7 +16,6 @@ var User = db.Model.extend({
   */
   initialize: function() {
     this.on('creating', function(model, attrs, options) {
-      //console.log(model.attributes, 'ATTRS: ',attrs);
       //this.set('username', model.attributes.username);
       //this.set('password', model.attributes.password);
     });
